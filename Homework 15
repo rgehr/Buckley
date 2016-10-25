@@ -1,0 +1,51 @@
+import java.util.Scanner;
+import java.util.Stack;
+
+public class PostFix {
+
+	public static void main(String[]args) throws IllegalPostfixNotation{
+		
+		Scanner scanny = new Scanner(System.in);
+		
+		System.out.println("Enter a postfix equation:");
+		
+		String equation = scanny.nextLine();
+		
+		Stack<Integer> solver = new Stack<>();
+		
+		for(int i = 0; i < equation.length(); i++){
+			if(equation.charAt(i) >= '0' && equation.charAt(i) <= '9'){
+				solver.push(Character.getNumericValue(equation.charAt(i)));
+			}
+			else if(equation.charAt(i) != '+' && equation.charAt(i) != '-' && equation.charAt(i) != '*' && equation.charAt(i) != '/'){
+				throw new IllegalPostfixNotation("Non-Numerical or Non-Operational Character! -> " + equation.charAt(i));
+			}
+			else{
+				int num = solver.pop();
+				if(solver.isEmpty()){
+					throw new IllegalPostfixNotation("At least 2 numbers required for this operation!");
+				}
+				int num1 = solver.pop();
+				if(equation.charAt(i) == '+'){
+					solver.push((num + num1));
+				}
+				else if(equation.charAt(i) == '-'){
+					solver.push((num1 - num));
+				}
+				else if(equation.charAt(i) == '*'){
+					solver.push((num * num1));
+				}
+				else if(equation.charAt(i) == '/'){
+					solver.push((num1 / num));
+				}
+			}
+		}
+		System.out.println(solver);
+	}
+}
+
+class IllegalPostfixNotation extends Exception{
+	IllegalPostfixNotation(String s){
+		System.out.println(s);
+	}
+}
