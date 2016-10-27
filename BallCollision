@@ -1,0 +1,138 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package multiplebounceball;
+
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.application.Application;
+import static javafx.application.Application.launch;
+import javafx.beans.property.DoubleProperty;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+
+/**
+ *
+ * @author vschwartz
+ */
+public class MultipleBounceBall extends Application {
+    
+    @Override
+    public void start(Stage primaryStage) {
+        MultipleBallPane ballPane = new MultipleBallPane();
+        ballPane.setStyle("-fx-border-color: yellow");
+        Button btAdd = new Button("+");
+        Button btSubtract = new Button("-");
+        HBox hBox = new HBox(10);
+        hBox.getChildren().addAll(btAdd, btSubtract);
+        hBox.setAlignment(Pos.CENTER);
+        
+        BorderPane pane = new BorderPane();
+        pane.setCenter(ballPane);
+        pane.setBottom(hBox);
+        
+        Scene scene = new Scene(pane, 500, 500); 
+        scene.getStylesheets().add("MultipleBallStyle.css");
+        primaryStage.setTitle("MultipleBounceBall");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        
+        btAdd.setOnAction(e -> ballPane.add(Math.random() * 465 + 30, Math.random() * 460 -50, /*(int)(Math.random() *25 + 1))*/20.0));
+        btSubtract.setOnAction(e -> ballPane.subtract());
+        ballPane.setOnMousePressed(e -> ballPane.pause());
+        ballPane.setOnMouseReleased(e -> ballPane.play());
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
+    
+    private class MultipleBallPane extends Pane {
+        private Timeline animation;
+        
+        public MultipleBallPane() {
+            animation = new Timeline(new KeyFrame(Duration.millis(50), e -> moveBall()));
+            animation.setCycleCount(Timeline.INDEFINITE);
+            animation.play();
+        }
+        
+        public void add(double x, double y, double r) {
+            Color color = new Color(Math.random(),
+                Math.random(), Math.random(), .5);
+            getChildren().add(new Ball(x, y, r, color));
+        }
+        
+        public void subtract() {
+            if (getChildren().size() > 0)
+                getChildren().remove(getChildren().size() - 1);
+        }
+        
+        public void play() {
+            animation.play();
+        }
+        
+        public void pause() {
+            animation.pause();
+        }
+        
+        public void increaseSpeed() {
+            animation.setRate(animation.getRate() + .1);
+        }
+
+        public void decreaseSpeed() {
+            animation.setRate(animation.getRate() > 0 ? animation.getRate() - .1 : 0);
+        }
+
+        public DoubleProperty rateProperty() {
+            return animation.rateProperty();
+        }
+        private int i = 0;
+        protected void moveBall() {
+            for (Node node: this.getChildren()) {
+                Ball ball = (Ball)node;
+                for(int i = 0; i < this.getChildren().size(); i++){
+                    if(Math.abs(ball.getCenterX() - ((Ball)getChildren().get(i)).getCenterX())  <= 20 && Math.abs(ball.getCenterY() - ((Ball)getChildren().get(i)).getCenterY())  <= 20){
+                        if(ball != ((Ball)getChildren().get(i))){
+                            ball.dx *= -1;
+                            ball.dy *= -1;
+                            System.out.println("BANG!!");
+                        }
+                    }
+                }
+                if (ball.getCenterX() < ball.getRadius() ||
+                        ball.getCenterX() > getWidth() - ball.getRadius())
+                    ball.dx *= -1;
+                
+                if (ball.getCenterY() < ball.getRadius() ||
+                        ball.getCenterY() > getHeight() - ball.getRadius())
+                    ball.dy *= -1;
+                
+                ball.setCenterX(ball.dx + ball.getCenterX());
+                ball.setCenterY(ball.dy + ball.getCenterY());
+            }
+        }
+    }   
+    
+    class Ball extends Circle {
+        private double dx = Math.random() * 10, dy = Math.random() * 10;
+        
+        Ball(double x, double y, double radius, Color color) {
+            super(x, y, radius);
+            setFill(color);
+        }
+    }
+}
