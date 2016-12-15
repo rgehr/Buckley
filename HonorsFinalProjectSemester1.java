@@ -52,7 +52,7 @@ public class HonorsFinalProjectSemester1 extends Application {
         
         Rectangle player = new Rectangle(60, 75, 40, 40);
         player.setFill(Color.INDIANRED);
-        player.setStroke(Color.LIGHTGRAY);
+        player.setStroke(Color.TRANSPARENT);
         Rectangle enemy1 = new Rectangle(600, 20, 30, 30);
         enemy1.setFill(Color.GREEN);
         Rectangle enemy2 = new Rectangle(600, 140, 30, 30);
@@ -60,7 +60,7 @@ public class HonorsFinalProjectSemester1 extends Application {
         Rectangle enemy3 = new Rectangle(600, 80, 30, 30);
         enemy3.setFill(Color.GREEN);
         enemy3.setRotate(90);
-        enemy3.setStroke(Color.LIGHTGRAY);
+        enemy3.setStroke(Color.TRANSPARENT);
         Rectangle wall1 = new Rectangle(0, 0, 600, 20);
         wall1.setFill(Color.GREEN);
         Rectangle wall2 = new Rectangle(0, 170, 600, 20);
@@ -125,11 +125,11 @@ public class HonorsFinalProjectSemester1 extends Application {
         borders.setOnAction(f -> {
                     root.requestFocus();
                     if(borders.isSelected()){
-                        player.setStroke(Color.TRANSPARENT);
-                        enemy3.setStroke(Color.TRANSPARENT);
-                    }else{
                         player.setStroke(Color.LIGHTGRAY);
                         enemy3.setStroke(Color.LIGHTGRAY);
+                    }else{
+                        player.setStroke(Color.TRANSPARENT);
+                        enemy3.setStroke(Color.TRANSPARENT);
                     }
                 });
         
@@ -163,7 +163,7 @@ public class HonorsFinalProjectSemester1 extends Application {
                     System.out.println(randSpawn);
                     randLane = rand.nextInt(3) +1;
                     System.out.println(randLane);
-                    if(gameOver==false){
+                    if(!gameOver){
                         scores++;
                         score.setText("Score:" + scores);
                     }else{
@@ -185,25 +185,37 @@ public class HonorsFinalProjectSemester1 extends Application {
                     if(randSpawn % 8 == 0){
                         if(randLane == 1 && PtEnemyPath1.getStatus() != Animation.Status.RUNNING){
                             PtEnemyPath1.setDuration(Duration.millis(4000));
+                            if(scores>385) PtEnemyPath1.setDuration(Duration.millis(2000));
+                            if(scores>700) PtEnemyPath1.setDuration(Duration.millis(1500));
                             System.out.println("Block 1!");
                             if(PtEnemyPath2.getStatus() == Animation.Status.RUNNING && PtEnemyPath3.getStatus() == Animation.Status.RUNNING){
                                 PtEnemyPath1.setDuration(Duration.millis(5500));
+                                if(scores>385) PtEnemyPath1.setDuration(Duration.millis(3500));
+                                if(scores>700) PtEnemyPath1.setDuration(Duration.millis(3000));
                             }
                             PtEnemyPath1.playFromStart();
                         }
                         if(randLane == 2 && PtEnemyPath2.getStatus() != Animation.Status.RUNNING){
                             PtEnemyPath2.setDuration(Duration.millis(4000));
+                            if(scores>385) PtEnemyPath2.setDuration(Duration.millis(2000));
+                            if(scores>700) PtEnemyPath2.setDuration(Duration.millis(1500));
                             System.out.println("Block 2!");
                             if(PtEnemyPath1.getStatus() == Animation.Status.RUNNING && PtEnemyPath3.getStatus() == Animation.Status.RUNNING){
                                 PtEnemyPath2.setDuration(Duration.millis(5500));
+                                if(scores>385) PtEnemyPath2.setDuration(Duration.millis(3500));
+                                if(scores>700) PtEnemyPath2.setDuration(Duration.millis(3000));
                             }
                             PtEnemyPath2.playFromStart();
                         }
                         if(randLane == 3 && PtEnemyPath3.getStatus() != Animation.Status.RUNNING){
                             PtEnemyPath3.setDuration(Duration.millis(4000));
+                            if(scores>385) PtEnemyPath3.setDuration(Duration.millis(2000));
+                            if(scores>700) PtEnemyPath3.setDuration(Duration.millis(1500));
                             System.out.println("Block 3!");
                             if(PtEnemyPath1.getStatus() == Animation.Status.RUNNING && PtEnemyPath2.getStatus() == Animation.Status.RUNNING){
                                 PtEnemyPath3.setDuration(Duration.millis(5500));
+                                if(scores>385) PtEnemyPath3.setDuration(Duration.millis(3500));
+                                if(scores>700) PtEnemyPath3.setDuration(Duration.millis(3000));
                             }
                             PtEnemyPath3.playFromStart();
                         }
@@ -234,9 +246,11 @@ public class HonorsFinalProjectSemester1 extends Application {
         root.setOnKeyPressed(e -> {
             switch(e.getCode()){
                 case SPACE: {
-                    if(gameOver==false){
+                    if(!gameOver){
                         pt.setRate(-1.0);
                         pt.setDuration(Duration.millis(1650));
+                        if(scores>385) pt.setDuration(Duration.millis(1200));
+                        if(scores>700) pt.setDuration(Duration.millis(1000));
                         pt.play();
                         break;
                     }
@@ -246,9 +260,11 @@ public class HonorsFinalProjectSemester1 extends Application {
         root.setOnKeyReleased(e -> {
             switch(e.getCode()){
                 case SPACE: {
-                    if(gameOver==false){
+                    if(!gameOver){
                         pt.setRate(1.0);
                         pt.setDuration(Duration.millis(1150));
+                        if(scores>385) pt.setDuration(Duration.millis(900));
+                        if(scores>700) pt.setDuration(Duration.millis(800));
                         pt.play();
                         break;
                     }
@@ -280,10 +296,14 @@ public class HonorsFinalProjectSemester1 extends Application {
             enemy2.setTranslateX(-1000);
             enemy3.setTranslateX(-1000);
             scores = 0;
+            PtEnemyPath1.setDuration(Duration.millis(4000));
+            PtEnemyPath2.setDuration(Duration.millis(4000));
+            PtEnemyPath3.setDuration(Duration.millis(4000));
+            pt.setDuration(Duration.millis(1650));
             mp1.play();
         });
         
-        primaryStage.setTitle("Cube Dodge!");
+        primaryStage.setTitle("Heli Dodge!");
         primaryStage.setScene(scene);
         primaryStage.show();
         
