@@ -38,11 +38,12 @@ import javafx.util.Duration;
  */
 public class HonorsFinalProjectSemester1 extends Application {
     
-    private int randSpawn =0;
-    private int randLane =0;
+    private int randSpawn = 0;
+    private int randLane = 0;
     private int scores = 0;
     private int highScore = 0;
     private boolean gameOver = false;
+    int i = 0;
     
     //private double playerSpeed = 1650.0;
     //private double enemySpeed = 4000.0;
@@ -67,8 +68,6 @@ public class HonorsFinalProjectSemester1 extends Application {
         wall2.setFill(Color.GREEN);
         Line path1 = new Line(80, 35, 80, 155);
         path1.setStroke(Color.TRANSPARENT);
-        Line path2 = new Line(80, 55, 80, 155);
-        path2.setStroke(Color.TRANSPARENT);
         Line enemyPath1 = new Line(650, 35, -50, 35);
         Line enemyPath2 = new Line(650, 155, -50, 155);
         Line enemyPath3 = new Line(650, 95, -50, 95);
@@ -101,10 +100,24 @@ public class HonorsFinalProjectSemester1 extends Application {
         borders.setTranslateY(171);
         borders.setScaleX(0.8);
         borders.setScaleY(0.8);
+        Button play = new Button("Play!");
+        play.setScaleX(3);
+        play.setScaleY(3);
+        play.setTranslateX(170);
+        play.setTranslateY(240);
+        Text heliDodge = new Text("HELI_DODGE!");
+        heliDodge.setFill(Color.GREEN);
+        heliDodge.setScaleX(4);
+        heliDodge.setScaleY(4);
+        heliDodge.setTranslateX(160);
+        heliDodge.setTranslateY(170);
+        Line menuPath = new Line(185, 60, 185, 100);
+        Rectangle menuHeli = new Rectangle(135, 20, 100, 100);
         
         Image image = new Image("http://rs493.pbsrc.com/albums/rr292/marcel_freezer/helicopter.gif~c200");
         ImagePattern imagePattern = new ImagePattern(image);
         player.setFill(imagePattern);
+        menuHeli.setFill(imagePattern);
         
         Image image2 = new Image("http://i.imgur.com/5kzvpsa.gif");
         ImagePattern imagePattern2 = new ImagePattern(image2);
@@ -114,13 +127,16 @@ public class HonorsFinalProjectSemester1 extends Application {
         ImagePattern imagePattern3 = new ImagePattern(image3);
         
         Pane root = new Pane();
-        root.getChildren().addAll(path1, path2, player, wall1, wall2, borders, score, enemy1, enemy2, enemy3, gameOverText, continueBtn);
+        root.getChildren().addAll(path1, player, wall1, wall2, borders, score, enemy1, enemy2, enemy3, gameOverText, continueBtn);
         root.setStyle("-fx-background-color: black");
         
         Pane root2 = new Pane();
         root2.getChildren().addAll(highScoreText, score2, playAgain);
         root2.setStyle("-fx-background-color: green");
         
+        Pane root3 = new Pane();
+        root3.getChildren().addAll(play, heliDodge, menuPath, menuHeli);
+        root3.setStyle("-fx-background-color: black");
         
         borders.setOnAction(f -> {
                     root.requestFocus();
@@ -137,7 +153,6 @@ public class HonorsFinalProjectSemester1 extends Application {
         PathTransition pt = new PathTransition(Duration.millis(1650), path1, player);
         pt.setCycleCount(1);
         pt.setInterpolator(Interpolator.LINEAR);
-        pt.play();
         PathTransition PtEnemyPath1 = new PathTransition(Duration.millis(4000), enemyPath1, enemy1);
         PtEnemyPath1.setCycleCount(1);
         PtEnemyPath1.setInterpolator(Interpolator.LINEAR);
@@ -147,28 +162,31 @@ public class HonorsFinalProjectSemester1 extends Application {
         PathTransition PtEnemyPath3 = new PathTransition(Duration.millis(4000), enemyPath3, enemy3);
         PtEnemyPath3.setCycleCount(1);
         PtEnemyPath3.setInterpolator(Interpolator.LINEAR);
+        PathTransition ptMenu = new PathTransition(Duration.millis(1650), menuPath, menuHeli);
+        ptMenu.setCycleCount(Timeline.INDEFINITE);
+        ptMenu.setAutoReverse(true);
+        ptMenu.play();
         
         File file = new File("/sound/music.wav");
         
         String soundFileName = "file:" + System.getProperty("user.dir") + file;
         MediaPlayer mp1 = new MediaPlayer(new Media(soundFileName));
         mp1.setAutoPlay(true);
-        mp1.play();
         
         Timeline animation = new Timeline(
                 
                 new KeyFrame(Duration.millis(100), e -> {
                     Random rand = new Random();
                     randSpawn = rand.nextInt(1000) +1;
-                    System.out.println(randSpawn);
+                    //System.out.println(randSpawn);
                     randLane = rand.nextInt(3) +1;
-                    System.out.println(randLane);
+                    //System.out.println(randLane);
                     if(!gameOver){
                         scores++;
                         score.setText("Score:" + scores);
                     }else{
                         if(scores > highScore){
-                            System.out.println("THIS HAPPENED");
+                            //System.out.println("THIS HAPPENED");
                             highScore = scores;
                         }
                         highScoreText.setText("High Score: " + highScore);
@@ -177,43 +195,43 @@ public class HonorsFinalProjectSemester1 extends Application {
                     
         }));
         animation.setCycleCount(Timeline.INDEFINITE);
-        animation.play();
+        //animation.play();
         Timeline animation2 = new Timeline(
                 
                 new KeyFrame(Duration.millis(10), e -> {
                     
                     if(randSpawn % 8 == 0){
                         if(randLane == 1 && PtEnemyPath1.getStatus() != Animation.Status.RUNNING){
-                            PtEnemyPath1.setDuration(Duration.millis(4000));
+                            if(scores<385) PtEnemyPath1.setDuration(Duration.millis(4000));
                             if(scores>385) PtEnemyPath1.setDuration(Duration.millis(2000));
                             if(scores>700) PtEnemyPath1.setDuration(Duration.millis(1500));
-                            System.out.println("Block 1!");
+                            //System.out.println("Block 1!");
                             if(PtEnemyPath2.getStatus() == Animation.Status.RUNNING && PtEnemyPath3.getStatus() == Animation.Status.RUNNING){
-                                PtEnemyPath1.setDuration(Duration.millis(5500));
+                                if(scores<385) PtEnemyPath1.setDuration(Duration.millis(5500));
                                 if(scores>385) PtEnemyPath1.setDuration(Duration.millis(3500));
                                 if(scores>700) PtEnemyPath1.setDuration(Duration.millis(3000));
                             }
                             PtEnemyPath1.playFromStart();
                         }
                         if(randLane == 2 && PtEnemyPath2.getStatus() != Animation.Status.RUNNING){
-                            PtEnemyPath2.setDuration(Duration.millis(4000));
+                            if(scores<385) PtEnemyPath2.setDuration(Duration.millis(4000));
                             if(scores>385) PtEnemyPath2.setDuration(Duration.millis(2000));
                             if(scores>700) PtEnemyPath2.setDuration(Duration.millis(1500));
-                            System.out.println("Block 2!");
+                            //System.out.println("Block 2!");
                             if(PtEnemyPath1.getStatus() == Animation.Status.RUNNING && PtEnemyPath3.getStatus() == Animation.Status.RUNNING){
-                                PtEnemyPath2.setDuration(Duration.millis(5500));
+                                if(scores<385) PtEnemyPath2.setDuration(Duration.millis(5500));
                                 if(scores>385) PtEnemyPath2.setDuration(Duration.millis(3500));
                                 if(scores>700) PtEnemyPath2.setDuration(Duration.millis(3000));
                             }
                             PtEnemyPath2.playFromStart();
                         }
                         if(randLane == 3 && PtEnemyPath3.getStatus() != Animation.Status.RUNNING){
-                            PtEnemyPath3.setDuration(Duration.millis(4000));
+                            if(scores<385) PtEnemyPath3.setDuration(Duration.millis(4000));
                             if(scores>385) PtEnemyPath3.setDuration(Duration.millis(2000));
                             if(scores>700) PtEnemyPath3.setDuration(Duration.millis(1500));
-                            System.out.println("Block 3!");
+                            //System.out.println("Block 3!");
                             if(PtEnemyPath1.getStatus() == Animation.Status.RUNNING && PtEnemyPath2.getStatus() == Animation.Status.RUNNING){
-                                PtEnemyPath3.setDuration(Duration.millis(5500));
+                                if(scores<385) PtEnemyPath3.setDuration(Duration.millis(5500));
                                 if(scores>385) PtEnemyPath3.setDuration(Duration.millis(3500));
                                 if(scores>700) PtEnemyPath3.setDuration(Duration.millis(3000));
                             }
@@ -241,17 +259,18 @@ public class HonorsFinalProjectSemester1 extends Application {
                     
         }));
         animation2.setCycleCount(Timeline.INDEFINITE);
-        animation2.play();
+        //animation2.play();
         
         root.setOnKeyPressed(e -> {
             switch(e.getCode()){
                 case SPACE: {
                     if(!gameOver){
                         pt.setRate(-1.0);
-                        pt.setDuration(Duration.millis(1650));
+                        if(scores<385) pt.setDuration(Duration.millis(1650));
                         if(scores>385) pt.setDuration(Duration.millis(1200));
                         if(scores>700) pt.setDuration(Duration.millis(1000));
                         pt.play();
+                        System.out.println(pt.getDuration() + " " + (++i));
                         break;
                     }
                 }
@@ -262,7 +281,7 @@ public class HonorsFinalProjectSemester1 extends Application {
                 case SPACE: {
                     if(!gameOver){
                         pt.setRate(1.0);
-                        pt.setDuration(Duration.millis(1150));
+                        if(scores<385) pt.setDuration(Duration.millis(1150));
                         if(scores>385) pt.setDuration(Duration.millis(900));
                         if(scores>700) pt.setDuration(Duration.millis(800));
                         pt.play();
@@ -272,6 +291,7 @@ public class HonorsFinalProjectSemester1 extends Application {
             }
         });
         
+        Scene startScreen = new Scene(root3, 400, 400);
         Scene scene = new Scene(root, 600, 190);
         Scene scoreScreen = new Scene(root2, 400, 400);
         
@@ -281,13 +301,15 @@ public class HonorsFinalProjectSemester1 extends Application {
             animation2.pause();
         });
         playAgain.setOnAction(e -> {
-                        
+                    
+            scores = 0;
             animation.play();
             animation2.play();
             
             primaryStage.setScene(scene);
             player.setFill(imagePattern);
-            pt.play();
+            pt.pause();
+            pt.playFromStart();
             root.requestFocus();
             gameOver = false;
             gameOverText.setFill(Color.TRANSPARENT);
@@ -295,16 +317,24 @@ public class HonorsFinalProjectSemester1 extends Application {
             enemy1.setTranslateX(-1000);
             enemy2.setTranslateX(-1000);
             enemy3.setTranslateX(-1000);
-            scores = 0;
             PtEnemyPath1.setDuration(Duration.millis(4000));
             PtEnemyPath2.setDuration(Duration.millis(4000));
             PtEnemyPath3.setDuration(Duration.millis(4000));
-            pt.setDuration(Duration.millis(1650));
             mp1.play();
         });
         
+        play.setOnAction(e -> {
+            primaryStage.setScene(scene);
+            pt.play();
+            mp1.play();
+            animation.play();
+            animation2.play();
+        });
+        
+        mp1.pause();
+        
         primaryStage.setTitle("Heli Dodge!");
-        primaryStage.setScene(scene);
+        primaryStage.setScene(startScreen);
         primaryStage.show();
         
         root.requestFocus();
